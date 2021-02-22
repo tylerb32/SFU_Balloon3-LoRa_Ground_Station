@@ -15,8 +15,13 @@ const server = http.createServer(function(req, res) {
             res.write(data);
         }
         res.end();
+<<<<<<< HEAD
     });
 });
+=======
+    })
+})
+>>>>>>> ab1ddafdaaafebc6469c3b85b854313409ba08ce
 
 // Attempt to run server - listen on specified port for requests
 server.listen(port, function(error) {
