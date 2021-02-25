@@ -1,7 +1,7 @@
 // Leaflet Map Creation
 let map = L.map('map').setView([51.483667, -113.142667], 13); // Launch Site
 //var map = L.map('map').setView([49.277693,-122.9209615], 11); // SFU Burnaby
-L.tileLayer(tileDir + '/{z}/{x}/{y}.png', {
+L.tileLayer('/tiles/{z}/{x}/{y}.png', {
     // Setup map attributes
     minZoom: 13,
     maxZoom: 13
@@ -13,12 +13,12 @@ let launchSiteMarker = L.marker([51.483667, -113.142667]).addTo(map);
 //var launchSiteMarker = L.marker([49.277693,-122.9209615]).addTo(map);
 launchSiteMarker.bindPopup("<b>YO?</b>").openPopup();
 
-//let marker1 = createMarker("Marker 1", [51.483667, -113.142667]);
-//let marker2 = createMarker("Marker 2", [51.383667, -113.042667]);
-// L.polyline([[51.483667, -113.142667], [51.383667, -113.042667]], {
-//     color: 'blue',
-//     smoothFactor: 2.0
-// }).addTo(map);
+let marker1 = createMarker("Marker 1", [51.483667, -113.142667]);
+let marker2 = createMarker("Marker 2", [51.383667, -113.042667]);
+L.polyline([[51.483667, -113.142667], [51.383667, -113.042667]], {
+    color: 'blue',
+    smoothFactor: 2.0
+}).addTo(map);
 
 // IDEA
 // Based on GPS data project the landing zone
