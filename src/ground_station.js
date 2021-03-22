@@ -48,13 +48,6 @@ function createMarker(title, location) {
     return marker;
 }
 
-// Get the string value of the specified setting -> ARCHIVE
-async function getSetting(setting) {
-    let response = await fetch("/src/settings.json");
-    let parsedObj = await response.json();
-    return parsedObj[setting];
-}
-
 // Update the data displayed on the map
 function updateData() {
     // Request the data from the server
