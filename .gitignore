@@ -1,5 +1,5 @@
-node_modules
 tiles
 test
 osm_data
-bc_tiles
+tiles_bc
+tiles_ab

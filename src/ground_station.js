@@ -4,19 +4,21 @@ let dataPointer = 0; // Stores current line in data file
 
 // Leaflet Map Creation
 let map = L.map('map').setView([51.483667, -113.142667], 9); // Launch Site
-//var map = L.map('map').setView([49.277693,-122.9209615], 11); // SFU Burnaby
-L.tileLayer('/test/{z}/{x}/{y}.png', {
+L.tileLayer('/tiles_ab/{z}/{x}/{y}.png', {
     // Setup map attributes
     minZoom: 9,
     maxZoom: 15,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
+// Add map scale
+L.control.scale().addTo(map);
 
 // Add launch site marker
 let launchSiteMarker = L.marker([51.483667, -113.142667]).addTo(map);
-//var launchSiteMarker = L.marker([49.277693,-122.9209615]).addTo(map);
-launchSiteMarker.bindPopup("<b>YO?</b>").openPopup();
+launchSiteMarker.bindPopup("<b>Launch Site</b>").openPopup();
 
+// Test markers
+// TODO: remove
 let marker1 = createMarker("Marker 1", [51.483667, -113.142667]);
 let marker2 = createMarker("Marker 2", [51.383667, -113.042667]);
 L.polyline([[51.483667, -113.142667], [51.383667, -113.042667]], {
