@@ -21,6 +21,7 @@ launchSiteMarker.bindPopup("<b>Launch Site</b>").openPopup();
 // TODO: remove
 let marker1 = createMarker("Marker 1", [51.483667, -113.142667]);
 let marker2 = createMarker("Marker 2", [51.383667, -113.042667]);
+// TODO: Create as markers are created, linking with the last marker to show the balloon's path
 L.polyline([[51.483667, -113.142667], [51.383667, -113.042667]], {
     color: 'blue',
     smoothFactor: 2.0
@@ -71,4 +72,5 @@ function updateData() {
         });
 }
 // Update the data being displayed on the map
-document.onload = setInterval(updateData, DATA_UPDATE_INTERVAL);
+// TODO: defer param in setup
+setInterval(updateData, DATA_UPDATE_INTERVAL);

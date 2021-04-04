@@ -1,0 +1,4 @@
+Place raster tiles directories in main directory.
+To Launch, start and http server in the main directory.
+To view the map webpage, navigate to the src directory in the http server.
+Note: Ensure the map starting location is within the selected map tiles.
