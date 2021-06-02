@@ -1,22 +1,20 @@
-from smbus2 import SMBus
+from smbus import SMBus
 from threading import Timer
 
 address = 0x8 # Bus address for i2c
 bus = SMBus(1)
 # Open file in append mode
-file_data = open('data_test.txt', 'a')
 
-def request_data(num_bytes):
-    block_data = bus.read_i2c_block_data(address, 0, num_bytes)
-    file_data.write(block_data)
-    file_data_write('\n')
+def main():
 
-timer = IntervalTimer(5, request_data, 11)
-try:
-    #parsing data here?
-finally:
-    timer.stop()
-    file_data.close()
+    def request_data(num_bytes):
+        file_data = open('data_test.txt', 'a')
+        block_data = bus.read_i2c_block_data(address, 0, num_bytes)
+        file_data.write(str(block_data))
+        file_data.write('\n')
+        file_data.close()
+
+    timer = IntervalTimer(1, request_data, 11)    
 
 class IntervalTimer:
     def __init__(self, interval, func, *args, **kwargs):
@@ -25,11 +23,11 @@ class IntervalTimer:
         self.func = func
         self.args = args
         self.kwargs = kwargs
-        self.running = false
+        self.running = False
         self.start()
     
     def _run(self):
-        self.running = false
+        self.running = False
         self.start()
         self.func(*self.args, **self.kwargs)
     
@@ -42,3 +40,6 @@ class IntervalTimer:
     def stop(self):
         self._timer.cancel()
         self.running = False
+
+if __name__ == '__main__':
+    main()
