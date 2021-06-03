@@ -4,7 +4,7 @@ let dataPointer = 0; // Stores current line in data file
 
 // Leaflet Map Creation
 let map = L.map('map').setView([51.483667, -113.142667], 9); // Launch Site
-L.tileLayer('/tiles_ab/{z}/{x}/{y}.png', {
+L.tileLayer('/tiles/{z}/{x}/{y}.png', {
     // Setup map attributes
     minZoom: 9,
     maxZoom: 15,
