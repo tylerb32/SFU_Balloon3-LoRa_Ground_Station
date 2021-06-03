@@ -8,7 +8,7 @@ bus = SMBus(1)
 def main():
 
     def request_data(num_bytes):
-        file_data = open(os.path.dirname(__file__) + '/../data/data.txt', 'a') # Open file in append mode
+        file_data = open(os.path.dirname(__file__) + '/../web/data/data.txt', 'a') # Open file in append mode
         block_data = bus.read_i2c_block_data(address, 0, num_bytes)
         file_data.write(str(block_data))
         file_data.write('\n')

@@ -54,7 +54,7 @@ function createMarker(title, location) {
 // Update the data displayed on the map
 function updateData() {
     // Request the data from the server
-    fetch("test_data.txt")
+    fetch("/data/data.txt")
         .then(response => response.text())
         .then(data => {
             dataArr = data.split('\n'); // <- TODO: Look into the efficiency of doing this for very long files (operation occurs on interval)
