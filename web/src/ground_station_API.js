@@ -34,9 +34,12 @@ export function getUserLocation() {
     }
 }
 
-// get google maps query link
+// Get google maps query link
+export function getDirectionsURL(location) {
+    return "https://google.ca/maps/dir/?api=1&destination=" + location[0] + "," + location[1];
+}
 
-// Map is a wrapper for Leaflet's map object
+// Wrapper for Leaflet's map object
 export class Map {
     constructor(location, tiles_path, minZoom, maxZoom) {
         this.latitude = location[0];
@@ -60,12 +63,11 @@ export class Map {
     // Adds a marker to the map at a specified location and title
     addMarker(location, title) {
         let marker = L.marker(location);
-        marker.bindPopup(title);
+        marker.bindPopup(title.bold());
         if (!this.markers.includes(marker)) {
             this.markers.push(marker);
             marker.addTo(this.map);
         }
-        console.log(this.markers.length);
     }
 
     // Removes a marker from the map specified by its location
