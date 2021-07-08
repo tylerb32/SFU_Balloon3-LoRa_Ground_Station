@@ -21,6 +21,7 @@ while [ true ]; do
     # Read user input inline and store in variable 'cmd'
     read -p "> " cmd
     case $cmd in
+
         # Stops the server and kills running processes
         "stop")
             echo "Closing processes..."
@@ -29,14 +30,21 @@ while [ true ]; do
             # Break out of infinite while loop
             break
             ;;
-        # Return server uptime
+
+       # Return server uptime
         "uptime")
             # Store current seconds value (auto incremented since script startup; initialized to 0)
             time_current=$(date -u +"%s")
             duration=$((time_current - time_start))
             echo "Running time: $(($duration / 60))m $(($duration % 60))s"
             ;;
-        # Default case
+
+        # Return server stats
+	"stats")
+		echo "Storage Usage: $(df -h | awk '/root/ {print $3 "/" $2 " (" $5 ")"}'"
+		;;
+
+	# Default case
         *)
             echo "Unknown command."
             ;;
