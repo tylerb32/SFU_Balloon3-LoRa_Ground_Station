@@ -41,7 +41,7 @@ while [ true ]; do
 
         # Return server stats
 	"stats")
-		echo "Storage Usage: $(df -h | awk '/root/ {print $3 "/" $2 " (" $5 ")"}'"
+		echo "Storage Usage: $(df -h | awk '/root/ {print $3 "/" $2 " (" $5 ")"}')"
 		;;
 
 	# Default case
@@ -50,4 +50,4 @@ while [ true ]; do
             ;;
     esac
 done
-echo "Ground station terminated
+echo "Ground station terminated"

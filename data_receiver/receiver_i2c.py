@@ -14,7 +14,7 @@ def main():
         file_data.write('\n')
         file_data.close()
 
-    timer = IntervalTimer(1, request_data, 11)    
+    timer = IntervalTimer(1, request_data, 11)
 
 class IntervalTimer:
     def __init__(self, interval, func, *args, **kwargs):
