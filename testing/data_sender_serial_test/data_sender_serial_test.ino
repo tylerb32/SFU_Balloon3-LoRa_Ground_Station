@@ -1,11 +1,11 @@
 #include <math.h>
 
 #define SERIAL_BAUD_RATE 9600
-#define SERIAL_TIMOUT 1
+#define SERIAL_TIMEOUT 1
 
 #define RADIUS_MIN 1
 #define RADIUS_MAX 5
-#define RADIUS_PRECISION 1000
+#define RADIUS_PRECISION 50
 #define ANGLE_MIN 0
 #define ANGLE_MAX 30
 #define ANGLE_PRECISION 1
@@ -22,6 +22,7 @@ void generateLocation(float &radius, float &angle, struct Location *center) {
     // Update the radius variable with a random number between the defined min and max values
     // Note: Since "random" only works with integers, dividing by precision (multiple of 10) converts to desired float
     radius = random(RADIUS_MIN, RADIUS_MAX) / RADIUS_PRECISION;
+    radius = (radius + 1)/50;
     int sign = (random(0, 2) == 0) ? -1 : 1;
     // Add or subtract from the angle
     angle += sign * random(ANGLE_MIN, ANGLE_MAX) / ANGLE_PRECISION;
@@ -35,6 +36,7 @@ void setup() {
     // Initialize serial connection
     Serial.begin(SERIAL_BAUD_RATE);
     Serial.setTimeout(SERIAL_TIMEOUT);
+    Serial.flush();
 }
 
 void loop() {
@@ -47,11 +49,14 @@ void loop() {
     loc.longitude = 49.21131;
     generateLocation(radius, angle, &loc);
     char lat[13];
-    dtostrf(loc.latitude, 12, 7, *lat);
+    dtostrf(loc.latitude, 12, 7, lat);
     char lon[13];
-    dtostrf(loc.longitude, 12, 7, *lon);
+    dtostrf(loc.longitude, 12, 7, lon);
 
     // Write latitude to serial port
     // TODO: concatenate latitude and longitude
     Serial.print(lat);
+    Serial.print('|');
+    Serial.print(lon);
+    Serial.print('\n');
 }
