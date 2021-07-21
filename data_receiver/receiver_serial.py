@@ -37,7 +37,7 @@ def write_and_read():
 def task_read(cond_var):
     while receiving:
         with cond_var:
-            data_buffer.append(read_until_EOL())
+            data_buffer = read_until_EOL()
             cond_var.notifyAll()
 
 def task_write(cond_var):
