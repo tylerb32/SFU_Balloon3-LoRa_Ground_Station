@@ -5,7 +5,7 @@
 
 #define RADIUS_MIN 1
 #define RADIUS_MAX 5
-#define RADIUS_PRECISION 1000
+#define RADIUS_PRECISION 100
 #define ANGLE_MIN 0
 #define ANGLE_MAX 30
 #define ANGLE_PRECISION 1
