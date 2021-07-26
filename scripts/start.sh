@@ -9,7 +9,7 @@ time_start=$(date -u +"%s")
 
 # Run data receiver in background and store PID
 cd ../data_receiver
-python3 receiver.py &
+python3 receiver_i2c.py &
 receiver_pid=$!
 
 # Run http-server in background and store PID

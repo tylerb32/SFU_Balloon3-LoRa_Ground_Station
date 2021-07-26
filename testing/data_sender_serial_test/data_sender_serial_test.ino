@@ -22,7 +22,7 @@ void generateLocation(float &radius, float &angle, struct Location *center) {
     // Update the radius variable with a random number between the defined min and max values
     // Note: Since "random" only works with integers, dividing by precision (multiple of 10) converts to desired float
     radius = random(RADIUS_MIN, RADIUS_MAX) / RADIUS_PRECISION;
-    radius = (radius + 1)/50;
+    radius = (radius + 1) / RADIUS_PRECISION;
     int sign = (random(0, 2) == 0) ? -1 : 1;
     // Add or subtract from the angle
     angle += sign * random(ANGLE_MIN, ANGLE_MAX) / ANGLE_PRECISION;
