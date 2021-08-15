@@ -13,9 +13,9 @@ function parsePacket(packet) {
     // Note: Currently does not account for corrupt/dropped "'" characters
     let packetData = packet.substring(packet.lastIndexOf("'", 3) + 1, packet.lastIndexOf("'"));
     // Assuming ',' delimiter
-    dataArr = packet.split(",");
+	dataArr = packet.split(",");
 
-    return components;
+	return components;
 }
 
 // TODO: Implement within API
