@@ -1,5 +1,9 @@
 const fs = require('fs');
 const eol = require('os').EOL;
+const gs = require('./ground_station_API');
+
+let map = new gs.Map([51.483667, -113.142667], '/tiles_ab', 9, 14);
+map.addMarker([51.483667, -113.142667], "MARKER 1".bold());
 
 const filePath = '../data/data.txt';
 let fileSize = fs.statSync(filePath).size;
@@ -30,6 +34,8 @@ fs.watchFile(filePath, function (current, previous) {
 
 function parseBuffer(buffer) {
     buffer.toString().split(eol).forEach(function (line) {
-        console.log(line);
+        if (line != "") {
+            console.log(line);
+        }
     });
 }

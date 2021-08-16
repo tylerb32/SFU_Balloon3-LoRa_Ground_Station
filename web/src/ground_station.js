@@ -34,4 +34,4 @@ async function updateData() {
     }
 }
 
-setInterval(updateData, DATA_UPDATE_INTERVAL);
+//setInterval(updateData, DATA_UPDATE_INTERVAL);
