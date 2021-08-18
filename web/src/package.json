@@ -1,0 +1,17 @@
+{
+  "name": "ground_station",
+  "version": "1.0.0",
+  "description": "LoRa ground station",
+  "main": "app.js",
+  "scripts": {
+    "start": "beefy app.js:bundle.js --live",
+    "bundle": "browserify app.js -o bundle.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "beefy": "^2.1.8",
+    "browserify": "^17.0.0",
+    "leaflet": "^1.7.1"
+  }
+}
