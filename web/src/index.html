@@ -6,23 +6,29 @@
     <link rel="stylesheet" href="lib/leaflet/dist/leaflet.css">
     <script src="lib/leaflet/dist/leaflet.js"></script>
     <script src="lib/sql/sql.js"></script>
-
-    <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css">
-    <script src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/sql.js@0.3.2/js/sql.js"></script> -->
-
-    <!-- <script src="https://unpkg.com/leaflet.tilelayer.mbtiles@latest/Leaflet.TileLayer.MBTiles.js"></script> -->
-    <!-- <script src="../node_modules/Leaflet.TileLayer.MBTiles/Leaflet.TileLayer.MBTiles.js"></script> -->
     <style>
         body { margin: 0; padding: 0; }
+        .log-container { width: 25%; height: 98vh; float: left; background-color: black; color: white }
+        .map-container { width: 75%; float: left }
+        .log { margin: 0; width: 100%; }
 	    #map { position: absolute; top: 0; bottom: 0; width: 100%; }
     </style>
     <title>Ground Station</title>
 </head>
 <body>
-    <h1>LoRa Ground Station</h1>
-    <!-- Declare map for leaflet -->
-    <div id="map"></div>
+    <div class="container">
+        <div class="log-container">
+            <div class="header">
+                <h1>LoRa Ground Station</h1>
+            </div>
+            <div class="log"></div>
+        </div>
+        <!-- Declare map for leaflet -->
+        <div class="map-container">
+            <div id="map"></div>
+        </div>
+    </div>
+    
     <script type="module" src="./ground_station.js"></script>
 </body>
 </html>
