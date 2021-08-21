@@ -1,5 +1,5 @@
 web/tiles
 test
 osm_data
-tiles_bc
-tiles_ab
+web/tiles_bc
+web/tiles_ab
