@@ -8,34 +8,9 @@ const DATA_UPDATE_INTERVAL = 5 * 1000; // Update data every 5 seconds
 const CHECKSUM_SEP_CHAR = '~';
 const PACKET_DELIM_CHAR = ',';
 const NO_FIX_CHAR = '!';
+const PROJECTED_FLIGHT_FILE_PATH = '/data/flight_path.csv';
 
 let dataPointer = 0; // Stores current line in data file
-
-let path = [[51.486, -113.142, 1000],
-            [51.488, -113.157, 4766],
-            [51.5113, -113.116, 7994],
-            [51.5339, -113.046, 10684],
-            [51.538, -112.965, 13912],
-            [51.5409, -112.85, 20368],
-            [51.534, -112.847, 24672],
-            [51.5277, -112.877, 28707],
-            [51.5537, -112.914, 24860.4],
-            [51.5536, -112.834, 11223.5],
-            [51.5965, -112.736, 3544],
-            [51.5875, -112.736, -4.27632]];
-
-let path2 = [[51.486, -113.142, 1000],
-            [51.488 + (Math.random()/12), -113.157 + (Math.random()/12), 4766 + (Math.random()*50)],
-            [51.5113 + (Math.random()/12), -113.116 + (Math.random()/12), 7994 + (Math.random()*50)],
-            [51.5339 + (Math.random()/12), -113.046 + (Math.random()/12), 10684 + (Math.random()*50)],
-            [51.538 + (Math.random()/12), -112.965 + (Math.random()/12), 13912 + (Math.random()*50)],
-            [51.5409 + (Math.random()/12), -112.85 + (Math.random()/12), 20368 + (Math.random()*50)],
-            [51.534 + (Math.random()/12), -112.847 + (Math.random()/12), 24672 + (Math.random()*50)],
-            [51.5277 + (Math.random()/12), -112.877 + (Math.random()/12), 28707 + (Math.random()*50)],
-            [51.5537 + (Math.random()/12), -112.914 + (Math.random()/12), 24860.4 + (Math.random()*50)],
-            [51.5536 + (Math.random()/12), -112.834 + (Math.random()/12), 11223.5 + (Math.random()*50)],
-            [51.5965 + (Math.random()/12), -112.736 + (Math.random()/12), 3544 + (Math.random()*50)],
-            [51.5875 + (Math.random()/12), -112.736 + (Math.random()/12), -4.27632 + (Math.random()*50)]];
 
 // Leaflet Map Creation
 let map = L.map('map').setView([51.483667, -113.142667], 14); // Launch Site
@@ -48,37 +23,72 @@ L.tileLayer('/tiles_ab/{z}/{x}/{y}.png', {
 // Add map scale
 L.control.scale().addTo(map);
 
+let blackCircleIcon = L.icon({
+    iconUrl: '/res/circle_black_marker.png',
+    iconSize: [12, 12],
+    iconAnchor: [6, 6],
+    popupAnchor: [0, 0]
+});
+
+let houseIcon = L.icon({
+    iconUrl: '/res/home_marker.png',
+    iconSize: [30, 30],
+    iconAnchor: [15, 30],
+    popupAnchor: [0, -30]
+});
+
+let greenLocIcon = L.icon({
+    iconUrl: '/res/green_marker.png',
+    iconSize: [36, 36],
+    iconAnchor: [18, 36],
+    popupAnchor: [0, 0]
+});
+
+let redLocIcon = L.icon({
+    iconUrl: '/res/red_marker.png',
+    iconSize: [36, 36],
+    iconAnchor: [18, 36],
+    popupAnchor: [0, 0]
+});
+
+let blueLocIcon = L.icon({
+    iconUrl: '/res/blue_marker.png',
+    iconSize: [36, 36],
+    iconAnchor: [18, 36],
+    popupAnchor: [0, 0]
+});
+
 // // Add launch site marker
-// let launchSiteMarker = L.marker([51.483667, -113.142667]).addTo(map);
-// launchSiteMarker.bindPopup("<b>Launch Site</b>").openPopup();
+let launchSiteMarker = L.marker([51.486, -113.142], {icon: houseIcon}).addTo(map);
+launchSiteMarker.bindPopup("<b>Launch Site</b>").openPopup();
 
 // // Test markers
 // // TODO: remove
 // let marker1 = createMarker("Marker 1", [51.483667, -113.142667]);
 // let marker2 = createMarker("Marker 2", [51.383667, -113.042667]);
 
-let markers = [];
-for (let i = 0; i < path.length; i++) {
-    markers[i] = createMarker("Altitude " + path[i][2] + "m", [path[i][0], path[i][1]]);
-    document.getElementById
-}
-for (let i = 1; i < path.length; i++) {
-    let point1 = [path[i-1][0], path[i-1][1]];
-    let point2 = [path[i][0], path[i][1]];
-    L.polyline([point1, point2], {
-        color: 'blue',
-        smoothFactor: 2.0
-    }).addTo(map);
-}
+// let markers = [];
+// for (let i = 0; i < path.length; i++) {
+//     markers[i] = createMarker("Altitude " + path[i][2] + "m", [path[i][0], path[i][1]]);
+//     document.getElementById
+// }
+// for (let i = 1; i < path.length; i++) {
+//     let point1 = [path[i-1][0], path[i-1][1]];
+//     let point2 = [path[i][0], path[i][1]];
+//     L.polyline([point1, point2], {
+//         color: 'blue',
+//         smoothFactor: 2.0
+//     }).addTo(map);
+// }
 
-for (let i = 1; i < path2.length; i++) {
-    let point1 = [path2[i-1][0], path2[i-1][1]];
-    let point2 = [path2[i][0], path2[i][1]];
-    L.polyline([point1, point2], {
-        color: 'black',
-        smoothFactor: 2.0
-    }).addTo(map);
-}
+// for (let i = 1; i < path2.length; i++) {
+//     let point1 = [path2[i-1][0], path2[i-1][1]];
+//     let point2 = [path2[i][0], path2[i][1]];
+//     L.polyline([point1, point2], {
+//         color: 'black',
+//         smoothFactor: 2.0
+//     }).addTo(map);
+// }
 
 // TODO: Create as markers are created, linking with the last marker to show the balloon's path
 // L.polyline([[51.483667, -113.142667], [51.383667, -113.042667]], {
@@ -100,13 +110,22 @@ for (let i = 1; i < path2.length; i++) {
 // TODO: Add parameter for colour
 // TODO: Add time information
 // TODO: Make google maps hyperlink open in new tab (currently redirects in current tab)
-function createMarker(title, location) {
+function createLocMarker(location, altitude, time, title, icon) {
     let getRoute = "Get Route";
     // How to format the maps query: https://developers.google.com/maps/documentation/urls/get-started
     let mapsQuery = "https://google.ca/maps/dir/?api=1&destination=" + location[0] + "," + location[1]
     let mapsLink = getRoute.link(mapsQuery);
-    let marker = L.marker(location).addTo(map);
-    marker.bindPopup("<b>"+ title + "</b><br>" + location[0] + ", " + location[1] + "</br><b>" + mapsLink + "</b>").openPopup();
+    let marker;
+    if (icon == null) {
+        marker = L.marker(location).addTo(map);
+    } else {
+        marker = L.marker(location, {icon: icon}).addTo(map);
+    }
+    marker.bindPopup("<p><b>"+ title + "</b><br>"
+                     + "Time: " + time + "<br>"
+                     + location[0] + ", " + location[1] + "<br>"
+                     + "Altitude: " + altitude + "m" + "<br><b>"
+                     + mapsLink + "</b></p>").openPopup();
     return marker;
 }
 
@@ -176,7 +195,8 @@ function parseData(packet) {
                 latitude: coords[0],
                 longitude: coords[1],
                 altitude: data[2],
-                time: data[3] };
+                time: data[3]
+            };
             return dataDict;
         } else {
             return null;
@@ -189,12 +209,55 @@ function parseData(packet) {
 
 }
 
-// Parses a csv file containing the HAB predictor output path and returns a dictionary with the following keys:
-// latitude, longitude, altitude, 
+// Parses a csv file containing the HAB predictor output path and returns an array:
+// {latitude, longitude, altitude, time}
 function parseProjectedPath(filePath) {
+    console.log("PARSE CALLED");
 
 }
 
+function plotProjectedPath() {
+    // Request the file from the server
+    fetch(PROJECTED_FLIGHT_FILE_PATH)
+        .then(response => response.text())
+        .then(data => {
+            let path = [];
+            let allData = data.split('\n');
+            for (let i = 0; i < allData.length; i+=5) {
+                let line = allData[i].split(',');
+                // Parse Time
+                let unixTime = parseInt(line[0]);
+                let date = new Date(unixTime * 1000);
+                let hours = date.getHours();
+                let minutes = '0' + date.getMinutes();
+                let seconds = '0' + date.getSeconds();
+                let time = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+                //Parse latitude, longitude, and altitude
+                let latitude = parseFloat(line[1]);
+                let longitude = parseFloat(line[2]);
+                let altitude = parseFloat(line[3]);
+                path.push({
+                    latitude: latitude,
+                    longitude: longitude,
+                    altitude: altitude,
+                    time: time
+                });
+            }
+            let markers = [];
+            for (let i = 0; i < path.length; i++) {
+                markers[i] = createLocMarker([path[i].latitude, path[i].longitude], path[i].altitude, path[i].time, "Predicted " + i, blackCircleIcon);
+            }
+            for (let i = 1; i < path.length; i++) {
+                let point1 = [path[i-1].latitude, path[i-1].longitude];
+                let point2 = [path[i].latitude, path[i].longitude];
+                L.polyline([point1, point2], {
+                    color: 'black',
+                    smoothFactor: 2.0
+                }).addTo(map);
+            }
+        });
+}
+plotProjectedPath();
 // Update the data displayed on the map
 function updateData() {
     // Request the data from the server
@@ -205,13 +268,10 @@ function updateData() {
                 let newFileData = data.substring(dataPointer, data.length);
                 dataPointer += newFileData.length;
                 let lineData = newFileData.split('\n');
-                let sampled = false;
+
                 for (let i = 0; i < lineData.length - 1; i++) {
-                    console.log(lineData[i]);
-                    if (sampled == false) {
-                        sampled = true;
-                        
-                    }
+                    let packet = parseData(lineData[i]);
+                    createLocMarker([packet.latitude, packet.longitude], packet.altitude, packet.time, "Received");
                 }
             }
             /*
