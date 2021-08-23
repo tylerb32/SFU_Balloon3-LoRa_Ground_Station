@@ -204,7 +204,8 @@ function updateData() {
                     if (sampled == false) {
                         sampled = true;
                         // Remove artifacts (i,e: b'<data>') from serial packet
-                        let packet = newData[i].substring(1, newData[i].length - 3);
+                        let serialPacket = newData[i].substring(2, newData[i].length - 2);
+
                     }
                 }
             }
