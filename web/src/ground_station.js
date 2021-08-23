@@ -149,6 +149,7 @@ function toDecimalDegrees(position) {
     let latArr = position[0].split('.');
     let latDeg = parseInt(latArr[0].substring(0, 1));
     let latMin = parseInt(latArr[0].substring(2, 3) + latArr[1]);
+    console.log(latArr[0].substring(2, 3) + latArr[1]);
     if (isNaN(latDeg) || isNaN(latMin)) {
         return null;
     }
@@ -179,9 +180,9 @@ function parseData(packet) {
     for (let i = 0; i < rawPacket.length; i++) {
         checksum += rawPacket[i];
     }
-    if (receivedChecksum != checksum) {
-        return null;
-    }
+    // if (receivedChecksum != checksum) {
+    //     return null;
+    // }
 
     let data = rawPacket.split(PACKET_DELIM_CHAR);
     // Log/Error packet
@@ -192,6 +193,7 @@ function parseData(packet) {
     // Data packet
     } else if (data.length == 4) {
         let coords = toDecimalDegrees([data[0], data[1]]);
+        console.log(coords);
         if (coords != null) {
             let dataDict = { 
                 latitude: coords[0],
