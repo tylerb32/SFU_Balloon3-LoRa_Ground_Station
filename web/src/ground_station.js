@@ -76,6 +76,13 @@ function updateData() {
     fetch('/data/data.txt')
         .then(response => response.text())
         .then(data => {
+            if (dataPointer != data.length) {
+                let newData = data.substring(dataPointer, data.length).split('\n');
+                for (let i = 0; i < newData.length; i++) {
+                    
+                }
+
+            }
             let dataArr = data.split('\n'); // <- TODO: Look into the efficiency of doing this for very long files (operation occurs on interval)
             // If new data is in the text file, print all the new data
             if (dataArr.length > dataPointer) {
