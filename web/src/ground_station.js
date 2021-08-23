@@ -167,7 +167,9 @@ function toDecimalDegrees(position) {
 }
 
 function parseData(packet) {
-    let receivedChecksum = parseInt(packet.split(CHECKSUM_SEP_CHAR)[0]);
+    let splitPacket = packet.split(CHECKSUM_SEP_CHAR);
+    let receivedChecksum = parseInt(splitPacket[0]);
+    let rawPacket = splitPacket[1];
     // If the checksum can't be parsed to an int, the packet is considered corrupted
     if (isNaN(receivedChecksum)) {
         return null;
@@ -271,7 +273,10 @@ function updateData() {
 
                 for (let i = 0; i < lineData.length - 1; i++) {
                     let packet = parseData(lineData[i]);
-                    createLocMarker([packet.latitude, packet.longitude], packet.altitude, packet.time, "Received");
+                    console.log(packet);
+                    if (packet !=  null) {
+                        createLocMarker([packet.latitude, packet.longitude], packet.altitude, packet.time, "Received");
+                    }
                 }
             }
             /*
