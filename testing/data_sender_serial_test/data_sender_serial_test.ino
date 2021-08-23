@@ -39,8 +39,24 @@ void setup() {
     Serial.flush();
 }
 
+String messageBuilder(String lat, String lon, String alt, String time) {
+    String message;
+    message += lat; message += ",";
+    message += lon; message += ",";
+    message += alt; message += ",";
+    message += time;
+
+    int checksum = 0;
+    for (int i = 0; i < message.length(); i++) {
+        checksum += message[i];
+    }
+    String packet;
+    packet += String(checksum); packet += "~";
+    packet += message;
+    return packet;
+}
+
 void loop() {
-	// TODO: Use dtostrf to convert float to string
     float radius = 0;
     float angle = random(ANGLE_MIN, ANGLE_MAX) / ANGLE_PRECISION;
     // Initialize loc with center of tileset
@@ -55,8 +71,6 @@ void loop() {
 
     // Write latitude to serial port
     // TODO: concatenate latitude and longitude
-    Serial.print(lat);
-    Serial.print('|');
-    Serial.print(lon);
-    Serial.print('\n');
+    Serial.println(messageBuilder(lat, lon, "1000", "5:00:00"));
+    delay(2000);
 }
