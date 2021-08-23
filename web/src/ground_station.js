@@ -4,7 +4,7 @@
 //console.log("JSON DATA: " + jsonFile.attribution);
 
 // Declaring constants
-const DATA_UPDATE_INTERVAL = 5 * 1000; // Update data every 5 seconds
+const DATA_UPDATE_INTERVAL = 4.5* 1000; // Update data every 4 seconds
 const CHECKSUM_SEP_CHAR = '~';
 const PACKET_DELIM_CHAR = ',';
 const NO_FIX_CHAR = '!';
@@ -196,15 +196,15 @@ function updateData() {
         .then(response => response.text())
         .then(data => {
             if (data.length > dataPointer) {
-                newData = (data.substring(dataPointer, data.length)).split('\n');
+                let newFileData = data.substring(dataPointer, data.length);
+                dataPointer += newFileData.length;
+                let lineData = newFileData.split('\n');
                 let sampled = false;
-                for (let i = 0; i < newData.length; i++) {
-                    dataPointer += newData[i].length;
-                    console.log(newData[i]);
+                for (let i = 0; i < lineData.length - 1; i++) {
+                    console.log(lineData[i]);
                     if (sampled == false) {
                         sampled = true;
-                        // Remove artifacts (i,e: b'<data>') from serial packet
-                        let serialPacket = newData[i].substring(2, newData[i].length - 2);
+
 
                     }
                 }

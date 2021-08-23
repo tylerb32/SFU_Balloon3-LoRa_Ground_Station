@@ -10,6 +10,8 @@
 #define ANGLE_MAX 30
 #define ANGLE_PRECISION 1
 
+int packetNum = 0;
+
 // Note: Ensure the Arduino's serial port is updated correctly (port number and OS convention) in "receiver_serial.py"
 
 struct Location {
@@ -51,7 +53,8 @@ String messageBuilder(String lat, String lon, String alt, String time) {
         checksum += message[i];
     }
     String packet;
-    packet += String(checksum); packet += "~";
+    packet += String(packetNum); packet += "~";
+    packetNum++;
     packet += message;
     return packet;
 }
@@ -64,12 +67,12 @@ void loop() {
     loc.latitude = -122.7266425;
     loc.longitude = 49.21131;
     generateLocation(radius, angle, &loc);
-//    char lat[13];
-//    dtostrf(loc.latitude, 12, 7, lat);
-//    char lon[13];
-//    dtostrf(loc.longitude, 12, 7, lon);
-    String lat = String(loc.latitude);
-    String lon = String(loc.longitude);
+    char lat[13];
+    dtostrf(loc.latitude, 12, 7, lat);
+    char lon[13];
+    dtostrf(loc.longitude, 12, 7, lon);
+//    String lat = String(loc.latitude);
+//    String lon = String(loc.longitude);
 
     // Write latitude to serial port
     // TODO: concatenate latitude and longitude

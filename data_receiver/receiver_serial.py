@@ -21,6 +21,7 @@ def read_and_write(conn):
     print("Stored: " + data_clean)
     file_data = open(os.getcwd() + '/../web/data/data.txt', 'a')
     file_data.write(data_clean)
+    file_data.write('\n')
     file_data.close()
 
 def signal_handler(signum, frame):
