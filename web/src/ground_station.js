@@ -4,7 +4,7 @@
 //console.log("JSON DATA: " + jsonFile.attribution);
 
 // Declaring constants
-const DATA_UPDATE_INTERVAL = 4.5* 1000; // Update data every 4 seconds
+const DATA_UPDATE_INTERVAL = 5 * 1000; // Update data every 5 seconds
 const CHECKSUM_SEP_CHAR = '~';
 const PACKET_DELIM_CHAR = ',';
 const NO_FIX_CHAR = '!';
@@ -189,6 +189,12 @@ function parseData(packet) {
 
 }
 
+// Parses a csv file containing the HAB predictor output path and returns a dictionary with the following keys:
+// latitude, longitude, altitude, 
+function parseProjectedPath(filePath) {
+
+}
+
 // Update the data displayed on the map
 function updateData() {
     // Request the data from the server
@@ -204,8 +210,7 @@ function updateData() {
                     console.log(lineData[i]);
                     if (sampled == false) {
                         sampled = true;
-
-
+                        
                     }
                 }
             }
