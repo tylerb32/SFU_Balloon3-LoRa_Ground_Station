@@ -123,7 +123,7 @@ function createLocMarker(location, altitude, time, title, icon) {
                      + "Time: " + time + "<br>"
                      + location[0] + ", " + location[1] + "<br>"
                      + "Altitude: " + altitude + "m" + "<br><b>"
-                     + mapsLink + "</b></p>").openPopup();
+                     + mapsLink + "</b></p>");
     return marker;
 }
 
@@ -145,9 +145,8 @@ function getUserLocation() {
 function toDecimalDegrees(position) {
     // Latitude Format: DDMM.MMMM
     let latArr = position[0].split('.');
-    let latDeg = parseInt(latArr[0].substring(0, 1));
-    let latMin = parseInt(latArr[0].substring(2, 3) + latArr[1]);
-    console.log(latArr[0].substring(2, 3) + latArr[1]);
+    let latDeg = parseInt(latArr[0].substring(0, 2));
+    let latMin = parseFloat(latArr[0].substring(2, latArr[0].length) + '.' + latArr[1]);
     if (isNaN(latDeg) || isNaN(latMin)) {
         return null;
     }
@@ -155,8 +154,9 @@ function toDecimalDegrees(position) {
 
     // Longitude Format: DDDMM.MMMM
     let lonArr = position[1].split('.');
-    let lonDeg = parseInt(lonArr[0].substring(0, 2));
-    let lonMin = parseInt(lonArr[0].substring(3, 4) + lonArr[1]);
+    let lonDeg = parseInt(lonArr[0].substring(0, 3));
+    let lonMin = parseFloat(lonArr[0].substring(3, lonArr[0].length) + '.' + lonArr[1]);
+    console.log(lonMin);
     if (isNaN(lonDeg) || isNaN(lonMin)) {
         return null;
     }
@@ -191,7 +191,6 @@ function parseData(packet) {
     // Data packet
     } else if (data.length == 4) {
         let coords = toDecimalDegrees([data[0], data[1]]);
-        console.log(coords);
         if (coords != null) {
             let dataDict = { 
                 latitude: coords[0],
@@ -208,7 +207,6 @@ function parseData(packet) {
     } else {
         return null;
     }
-
 }
 
 function plotProjectedPath() {
@@ -266,7 +264,6 @@ function updateData() {
 
                 for (let i = 0; i < lineData.length - 1; i++) {
                     let packet = parseData(lineData[i]);
-                    console.log(packet);
                     if (packet !=  null) {
                         createLocMarker([packet.latitude, packet.longitude], packet.altitude, packet.time, "Received");
                     }
