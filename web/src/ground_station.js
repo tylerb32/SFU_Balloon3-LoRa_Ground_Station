@@ -26,7 +26,6 @@ let launchSiteMarker = L.marker([51.486, -113.142], {icon: utils.ICON_HOUSE}).ad
 launchSiteMarker.bindPopup("<b>Launch Site</b>").openPopup();
 
 // Create a marker containing location data and google maps directions link. Adds marker to map and returns the marker object
-// TODO: Make google maps hyperlink open in new tab (currently redirects in current tab)
 function createLocMarker(location, altitude, time, title, icon) {
     let getRoute = "Get Route";
     // How to format the maps query: https://developers.google.com/maps/documentation/urls/get-started
@@ -44,20 +43,6 @@ function createLocMarker(location, altitude, time, title, icon) {
                      + "Altitude: " + altitude + "m" + "<br><b>"
                      + mapsLink + "</b></p>");
     return marker;
-}
-
-function getUserLocation() {
-    if (navigator.geolocation()) {
-        let latitude, longitude;
-        navigator.geolocation.getCurrentPosition((position) => {
-            latitude = position.coords.latitude;
-            longitude = position.coords.longitude;
-        });
-        return [latitude, longitude];
-
-    } else {
-        return null;
-    }
 }
 
 // Accept an array [lat,long]
@@ -170,6 +155,7 @@ function plotProjectedPath() {
         });
 }
 plotProjectedPath();
+
 // Update the data displayed on the map
 function updateData() {
     // Request the data from the server
@@ -184,13 +170,13 @@ function updateData() {
                 for (let i = 0; i < lineData.length - 1; i++) {
                     let packet = parseData(lineData[i]);
                     if (packet == PACKET_ERROR.INVALID_CHARACTERS) {
-                        // Log
+                        console.warn("Invalid character received.");
 
                     } else if (packet == PACKET_ERROR.INVALID_CHECKSUM) {
-                        // Log
+                        console.warn("Invalid character received.");
 
                     } else if (packet == PACKET_ERROR.INVALID_FORMAT) {
-                        //log
+                        console.warn("Invalid character received.");
 
                     } else {
                         createLocMarker([packet.latitude, packet.longitude], packet.altitude, packet.time, "Received");
