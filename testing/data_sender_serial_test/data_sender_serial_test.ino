@@ -64,8 +64,8 @@ void loop() {
     float angle = random(ANGLE_MIN, ANGLE_MAX) / ANGLE_PRECISION;
     // Initialize loc with center of tileset
     struct Location loc;
-    loc.latitude = -122.7266425;
-    loc.longitude = 49.21131;
+    loc.latitude = 49.21131;
+    loc.longitude = -122.7266425;
     generateLocation(radius, angle, &loc);
     char lat[13];
     dtostrf(loc.latitude, 12, 7, lat);
