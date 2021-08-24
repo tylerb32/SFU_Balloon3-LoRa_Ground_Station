@@ -22,8 +22,7 @@ String messageBuilder(String lat, String lon, String alt, String time) {
         checksum += message[i];
     }
     String packet;
-    packet += String(packetNum); packet += "~";
-    packetNum++;
+    packet += String(checksum); packet += "~";
     packet += message;
     return packet;
 }
@@ -40,4 +39,3 @@ void loop() {
     Serial.print("\n");
     delay(2000);
 }
-
