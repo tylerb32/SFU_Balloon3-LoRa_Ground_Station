@@ -161,35 +161,33 @@ function plotProjectedPath() {
 plotProjectedPath();
 
 // Update the data displayed on the map
-function updateData() {
+async function updateData() {
     // Request the data from the server
-    fetch('/data/data.txt')
-        .then(response => response.text())
-        .then(data => {
-            if (data.length > dataPointer) {
-                let newFileData = data.substring(dataPointer, data.length);
-                dataPointer += newFileData.length;
-                let lineData = newFileData.split('\n');
+    let response = await fetch('/data/data.txt');
+    let data = await response.text();
+    if (data.length > dataPointer) {
+        let newFileData = data.substring(dataPointer, data.length);
+        dataPointer += newFileData.length;
+        let lineData = newFileData.split('\n');
 
-                for (let i = 0; i < lineData.length - 1; i++) {
-                    let packet = parseData(lineData[i]);
-                    if (packet == PACKET_ERROR.INVALID_CHARACTERS) {
-                        console.warn("Invalid character received.");
+        for (let i = 0; i < lineData.length - 1; i++) {
+            let packet = parseData(lineData[i]);
+            if (packet == PACKET_ERROR.INVALID_CHARACTERS) {
+                console.warn("Invalid character received.");
 
-                    } else if (packet == PACKET_ERROR.INVALID_CHECKSUM) {
-                        console.warn("Invalid checksum received.");
+            } else if (packet == PACKET_ERROR.INVALID_CHECKSUM) {
+                console.warn("Invalid checksum received.");
 
-                    } else if (packet == PACKET_ERROR.INVALID_FORMAT) {
-                        console.warn("Invalid format received.");
+            } else if (packet == PACKET_ERROR.INVALID_FORMAT) {
+                console.warn("Invalid format received.");
 
-                    } else if (packet == PACKET_ERROR.NO_FIX) {
-                        console.error("No GPS fix.");
-                    } else {
-                        createLocMarker([packet.latitude, packet.longitude], packet.altitude, packet.time, "Received", utils.ICON_LOC_BLUE);
-                    }
-                }
+            } else if (packet == PACKET_ERROR.NO_FIX) {
+                console.error("No GPS fix.");
+            } else {
+                createLocMarker([packet.latitude, packet.longitude], packet.altitude, packet.time, "Received", utils.ICON_LOC_BLUE);
             }
-        });
+        }
+    }
 }
 
 // Update the data being displayed on the map

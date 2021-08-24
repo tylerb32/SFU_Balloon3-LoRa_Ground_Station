@@ -1,13 +1,29 @@
 import serial
 import os
 import signal
+from shutil import SameFileError, copy
+from datetime import datetime
+import time
 
 # SERIAL_PORT = "COM3"
 SERIAL_PORT = "/dev/ttyACM0"
 SERIAL_BAUD_RATE = 9600
 SERIAL_TIMEOUT = 10
+BACKUP_INTERVAL = 15 * 60 # Backup every 15 minutes
 
 receiving = True
+
+current_time = time.time()
+
+def backup_file():
+    now = datetime.now()
+    date_str = now.strftime("%b-%d-%Y_%H-%M-%S")
+    file_name = "data_" + date_str + ".txt"
+    try:
+        copy(os.getcwd() + "/../web/data/data.txt", os.getcwd() + "/../backups/" + file_name)
+        print("Backup created successfully")
+    except SameFileError:
+        print("ERROR: Unable to backup file.");
 
 def read_and_write(conn):
     # readline() blocks calling thread until line received
@@ -23,6 +39,11 @@ def read_and_write(conn):
     file_data.write(data_clean)
     file_data.write('\n')
     file_data.close()
+
+    if (time.time() - current_time > BACKUP_INTERVAL):
+        current_time = time.time()
+        backup_file()
+
 
 def signal_handler(signum, frame):
     global receiving
