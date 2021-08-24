@@ -1,7 +1,7 @@
 import serial
 import os
 import signal
-from shutil import SameFileError, copy
+from shutil import SameFileError, copyfile
 from datetime import datetime
 import time
 
@@ -20,12 +20,13 @@ def backup_file():
     date_str = now.strftime("%b-%d-%Y_%H-%M-%S")
     file_name = "data_" + date_str + ".txt"
     try:
-        copy(os.getcwd() + "/../web/data/data.txt", os.getcwd() + "/../backups/" + file_name)
+        copyfile("../web/data/data.txt", "../backups/" + file_name)
         print("Backup created successfully")
-    except SameFileError:
+    except:
         print("ERROR: Unable to backup file.");
 
 def read_and_write(conn):
+    global current_time
     # readline() blocks calling thread until line received
     # i.e: EOL character
     data_received = conn.readline()
