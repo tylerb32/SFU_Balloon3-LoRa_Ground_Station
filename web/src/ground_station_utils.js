@@ -16,21 +16,21 @@ export const ICON_LOC_GREEN = L.icon({
     iconUrl: '/res/green_marker.png',
     iconSize: [36, 36],
     iconAnchor: [18, 36],
-    popupAnchor: [0, 0]
+    popupAnchor: [0, -36]
 });
 
 export const ICON_LOC_RED = L.icon({
     iconUrl: '/res/red_marker.png',
     iconSize: [36, 36],
     iconAnchor: [18, 36],
-    popupAnchor: [0, 0]
+    popupAnchor: [0, -36]
 });
 
 export const ICON_LOC_BLUE = L.icon({
     iconUrl: '/res/blue_marker.png',
     iconSize: [36, 36],
     iconAnchor: [18, 36],
-    popupAnchor: [0, 0]
+    popupAnchor: [0, -36]
 });
 
 // May not need this
