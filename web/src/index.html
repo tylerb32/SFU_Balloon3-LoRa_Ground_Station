@@ -10,7 +10,7 @@
         body { margin: 0; padding: 0; }
         .log-container { width: 25%; height: 98vh; float: left; background-color: black; color: white }
         .map-container { width: 75%; float: left }
-        .log { margin: 0; width: 100%; }
+        #log { margin: 0; width: 100%; }
 	    #map { position: absolute; top: 0; bottom: 0; width: 100%; }
     </style>
     <title>Ground Station</title>
@@ -21,7 +21,7 @@
             <div class="header">
                 <h1>LoRa Ground Station</h1>
             </div>
-            <div class="log"></div>
+            <div id="log"></div>
         </div>
         <!-- Declare map for leaflet -->
         <div class="map-container">

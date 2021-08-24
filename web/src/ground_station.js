@@ -51,6 +51,7 @@ function toDecimalDegrees(position) {
     let latArr = position[0].split('.');
     let latDeg = parseInt(latArr[0].substring(0, 2));
     let latMin = parseFloat(latArr[0].substring(2, latArr[0].length) + '.' + latArr[1]);
+    
     if (isNaN(latDeg) || isNaN(latMin)) {
         return null;
     }
@@ -60,7 +61,7 @@ function toDecimalDegrees(position) {
     let lonArr = position[1].split('.');
     let lonDeg = parseInt(lonArr[0].substring(0, 3));
     let lonMin = parseFloat(lonArr[0].substring(3, lonArr[0].length) + '.' + lonArr[1]);
-    console.log(lonMin);
+
     if (isNaN(lonDeg) || isNaN(lonMin)) {
         return null;
     }
@@ -80,8 +81,9 @@ function parseData(packet) {
     // Calculate checksum
     let checksum = 0;
     for (let i = 0; i < rawPacket.length; i++) {
-        checksum += rawPacket[i];
+        checksum += rawPacket.charCodeAt(i);
     }
+    console.log("Received: " + receivedChecksum + " | checksum: " + checksum);
     if (receivedChecksum != checksum) {
         return PACKET_ERROR.INVALID_CHECKSUM;
     }
@@ -173,10 +175,10 @@ function updateData() {
                         console.warn("Invalid character received.");
 
                     } else if (packet == PACKET_ERROR.INVALID_CHECKSUM) {
-                        console.warn("Invalid character received.");
+                        console.warn("Invalid checksum received.");
 
                     } else if (packet == PACKET_ERROR.INVALID_FORMAT) {
-                        console.warn("Invalid character received.");
+                        console.warn("Invalid format received.");
 
                     } else {
                         createLocMarker([packet.latitude, packet.longitude], packet.altitude, packet.time, "Received");
