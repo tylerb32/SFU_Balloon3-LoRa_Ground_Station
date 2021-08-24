@@ -1,7 +1,4 @@
-
-
-//let jsonFile = await gsapi.readJSON('/tiles/tiles.json');
-//console.log("JSON DATA: " + jsonFile.attribution);
+import * as utils from './ground_station_utils.js'
 
 // Declaring constants
 const DATA_UPDATE_INTERVAL = 5 * 1000; // Update data every 5 seconds
@@ -9,6 +6,7 @@ const CHECKSUM_SEP_CHAR = '~';
 const PACKET_DELIM_CHAR = ',';
 const NO_FIX_CHAR = '!';
 const PROJECTED_FLIGHT_FILE_PATH = '/data/flight_path.csv';
+const PACKET_ERROR = { INVALID_CHECKSUM: 1, INVALID_CHARACTERS: 2, INVALID_FORMAT: 3 };
 
 let dataPointer = 0; // Stores current line in data file
 
@@ -23,88 +21,9 @@ L.tileLayer('/tiles_ab/{z}/{x}/{y}.png', {
 // Add map scale
 L.control.scale().addTo(map);
 
-let blackCircleIcon = L.icon({
-    iconUrl: '/res/circle_black_marker.png',
-    iconSize: [12, 12],
-    iconAnchor: [6, 6],
-    popupAnchor: [0, 0]
-});
-
-let houseIcon = L.icon({
-    iconUrl: '/res/home_marker.png',
-    iconSize: [30, 30],
-    iconAnchor: [15, 30],
-    popupAnchor: [0, -30]
-});
-
-let greenLocIcon = L.icon({
-    iconUrl: '/res/green_marker.png',
-    iconSize: [36, 36],
-    iconAnchor: [18, 36],
-    popupAnchor: [0, 0]
-});
-
-let redLocIcon = L.icon({
-    iconUrl: '/res/red_marker.png',
-    iconSize: [36, 36],
-    iconAnchor: [18, 36],
-    popupAnchor: [0, 0]
-});
-
-let blueLocIcon = L.icon({
-    iconUrl: '/res/blue_marker.png',
-    iconSize: [36, 36],
-    iconAnchor: [18, 36],
-    popupAnchor: [0, 0]
-});
-
 // // Add launch site marker
-let launchSiteMarker = L.marker([51.486, -113.142], {icon: houseIcon}).addTo(map);
+let launchSiteMarker = L.marker([51.486, -113.142], {icon: utils.ICON_HOUSE}).addTo(map);
 launchSiteMarker.bindPopup("<b>Launch Site</b>").openPopup();
-
-// // Test markers
-// // TODO: remove
-// let marker1 = createMarker("Marker 1", [51.483667, -113.142667]);
-// let marker2 = createMarker("Marker 2", [51.383667, -113.042667]);
-
-// let markers = [];
-// for (let i = 0; i < path.length; i++) {
-//     markers[i] = createMarker("Altitude " + path[i][2] + "m", [path[i][0], path[i][1]]);
-//     document.getElementById
-// }
-// for (let i = 1; i < path.length; i++) {
-//     let point1 = [path[i-1][0], path[i-1][1]];
-//     let point2 = [path[i][0], path[i][1]];
-//     L.polyline([point1, point2], {
-//         color: 'blue',
-//         smoothFactor: 2.0
-//     }).addTo(map);
-// }
-
-// for (let i = 1; i < path2.length; i++) {
-//     let point1 = [path2[i-1][0], path2[i-1][1]];
-//     let point2 = [path2[i][0], path2[i][1]];
-//     L.polyline([point1, point2], {
-//         color: 'black',
-//         smoothFactor: 2.0
-//     }).addTo(map);
-// }
-
-// TODO: Create as markers are created, linking with the last marker to show the balloon's path
-// L.polyline([[51.483667, -113.142667], [51.383667, -113.042667]], {
-//     color: 'blue',
-//     smoothFactor: 2.0
-// }).addTo(map);
-
-// IDEA
-// Based on GPS data project the landing zone
-// let landingZone = L.circle([51.583667, -113.242667], {
-//     color: 'red',
-//     fillColor: 'red',
-//     fillOpacity: 0.5,
-//     radius: 5000
-// }).addTo(map);
-//landingZone.bindTooltip("Projected Landing Zone").openTooltip();
 
 // Create a marker containing location data and google maps directions link. Adds marker to map and returns the marker object
 // TODO: Make google maps hyperlink open in new tab (currently redirects in current tab)
@@ -171,16 +90,16 @@ function parseData(packet) {
     let rawPacket = splitPacket[1];
     // If the checksum can't be parsed to an int, the packet is considered corrupted
     if (isNaN(receivedChecksum)) {
-        return null;
+        return PACKET_ERROR.INVALID_CHARACTERS;
     }
     // Calculate checksum
     let checksum = 0;
     for (let i = 0; i < rawPacket.length; i++) {
         checksum += rawPacket[i];
     }
-    // if (receivedChecksum != checksum) {
-    //     return null;
-    // }
+    if (receivedChecksum != checksum) {
+        return PACKET_ERROR.INVALID_CHECKSUM;
+    }
 
     let data = rawPacket.split(PACKET_DELIM_CHAR);
     // Log/Error packet
@@ -200,12 +119,12 @@ function parseData(packet) {
             };
             return dataDict;
         } else {
-            return null;
+            return PACKET_ERROR.INVALID_CHARACTERS;
         }
         
     // Faulty packet
     } else {
-        return null;
+        return PACKET_ERROR.INVALID_FORMAT;
     }
 }
 
@@ -238,7 +157,7 @@ function plotProjectedPath() {
             }
             let markers = [];
             for (let i = 0; i < path.length; i++) {
-                markers[i] = createLocMarker([path[i].latitude, path[i].longitude], path[i].altitude, path[i].time, "Predicted " + i, blackCircleIcon);
+                markers[i] = createLocMarker([path[i].latitude, path[i].longitude], path[i].altitude, path[i].time, "Predicted " + i, utils.ICON_CIRCLE_BLACK);
             }
             for (let i = 1; i < path.length; i++) {
                 let point1 = [path[i-1].latitude, path[i-1].longitude];
@@ -264,24 +183,20 @@ function updateData() {
 
                 for (let i = 0; i < lineData.length - 1; i++) {
                     let packet = parseData(lineData[i]);
-                    if (packet !=  null) {
+                    if (packet == PACKET_ERROR.INVALID_CHARACTERS) {
+                        // Log
+
+                    } else if (packet == PACKET_ERROR.INVALID_CHECKSUM) {
+                        // Log
+
+                    } else if (packet == PACKET_ERROR.INVALID_FORMAT) {
+                        //log
+
+                    } else {
                         createLocMarker([packet.latitude, packet.longitude], packet.altitude, packet.time, "Received");
                     }
                 }
             }
-            /*
-            let dataArr = data.split('\n'); // <- TODO: Look into the efficiency of doing this for very long files (operation occurs on interval)
-            // If new data is in the text file, print all the new data
-            if (dataArr.length > dataPointer) {
-                for (; dataPointer < dataArr.length; dataPointer++) {
-                    // Filter out unwanted artifacts
-                    // TODO: add further parsing directly related to the balloon data being received (i.e: don't necessary want to display payload data)
-                    if (dataArr[dataPointer] != "\n") {
-                        // TODO: create markers using received data
-                        console.log(dataArr[dataPointer]);
-                    }
-                }
-            }*/
         });
 }
 
