@@ -33,6 +33,7 @@ export const ICON_LOC_BLUE = L.icon({
     popupAnchor: [0, 0]
 });
 
+// May not need this
 export function getUserLocation() {
     if (navigator.geolocation()) {
         let latitude, longitude;
