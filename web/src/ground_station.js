@@ -107,8 +107,6 @@ launchSiteMarker.bindPopup("<b>Launch Site</b>").openPopup();
 //landingZone.bindTooltip("Projected Landing Zone").openTooltip();
 
 // Create a marker containing location data and google maps directions link. Adds marker to map and returns the marker object
-// TODO: Add parameter for colour
-// TODO: Add time information
 // TODO: Make google maps hyperlink open in new tab (currently redirects in current tab)
 function createLocMarker(location, altitude, time, title, icon) {
     let getRoute = "Get Route";
@@ -210,13 +208,6 @@ function parseData(packet) {
     } else {
         return null;
     }
-
-}
-
-// Parses a csv file containing the HAB predictor output path and returns an array:
-// {latitude, longitude, altitude, time}
-function parseProjectedPath(filePath) {
-    console.log("PARSE CALLED");
 
 }
 
