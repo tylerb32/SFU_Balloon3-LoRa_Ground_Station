@@ -7,8 +7,12 @@ const PACKET_DELIM_CHAR = ',';
 const NO_FIX_CHAR = '!';
 const PROJECTED_FLIGHT_FILE_PATH = '/data/flight_path.csv';
 const PACKET_ERROR = { INVALID_CHECKSUM: 1, INVALID_CHARACTERS: 2, INVALID_FORMAT: 3, NO_FIX: 4 };
+const MIN_PLOT_DISTANCE = 5; // The minimum distance in meters required between points for them to be plotted - 0 => plot all points
 
 let dataPointer = 0; // Stores current line in data file
+let prevLoc = null; // Stores the last plotted marker as {latitude, longitude, altitude, time}
+let totalPacketCounter = 0;
+let goodPacketCounter = 0;
 
 // Leaflet Map Creation
 let map = L.map('map').setView([51.483667, -113.142667], 14); // Launch Site
@@ -148,9 +152,8 @@ function plotProjectedPath() {
                     time: time
                 });
             }
-            let markers = [];
             for (let i = 0; i < path.length; i++) {
-                markers[i] = createLocMarker([path[i].latitude, path[i].longitude], path[i].altitude, path[i].time, "Predicted " + i, utils.ICON_CIRCLE_BLACK);
+                createLocMarker([path[i].latitude, path[i].longitude], path[i].altitude, path[i].time, "Predicted " + i, utils.ICON_CIRCLE_BLACK);
             }
             for (let i = 1; i < path.length; i++) {
                 let point1 = [path[i-1].latitude, path[i-1].longitude];
@@ -175,6 +178,7 @@ async function updateData() {
         let lineData = newFileData.split('\n');
 
         for (let i = 0; i < lineData.length - 1; i++) {
+            totalPacketCounter++;
             let packet = parseData(lineData[i]);
             if (packet == PACKET_ERROR.INVALID_CHARACTERS) {
                 console.warn("Invalid character received.");
@@ -187,8 +191,25 @@ async function updateData() {
 
             } else if (packet == PACKET_ERROR.NO_FIX) {
                 console.error("No GPS fix.");
+
             } else {
-                createLocMarker([packet.latitude, packet.longitude], packet.altitude, packet.time, "Received", utils.ICON_LOC_BLUE);
+                goodPacketCounter++;
+                if (prevLoc == null || MIN_PLOT_DISTANCE <= 0) {
+                    prevLoc = packet;
+                    createLocMarker([packet.latitude, packet.longitude], packet.altitude, packet.time, "Received #" + goodPacketCounter + "/" + totalPacketCounter, utils.ICON_LOC_BLUE);
+
+                } else if (utils.getDistanceBetweenCoords([prevLoc.latitude, prevLoc.longitude], [packet.latitude, packet.longitude]) >= MIN_PLOT_DISTANCE) {
+                    let icon = utils.ICON_LOC_BLUE;
+                    if (packet.altitude > prevLoc.altitude) {
+                        icon = utils.ICON_LOC_GREEN;
+
+                    } else if (packet.altitude < prevLoc.altitude) {
+                        icon = utils.ICON_LOC_RED;
+                    }
+                    prevLoc = [packet.latitude, packet.longitude, packet.altitude];
+                    createLocMarker([packet.latitude, packet.longitude], packet.altitude, packet.time, "Received #" + goodPacketCounter + "/" + totalPackteCounter, icon);
+                }
+                
                 console.log("Received: [" + packet.latitude + ", " + packet.longitude + "], " + packet.altitude + "m, @ " + packet.time);
             }
         }

@@ -48,11 +48,17 @@ export function getUserLocation() {
     }
 }
 
+// Approximates the distance between 2 coordinates
+// Takes 2 coordinates in the following format [lat1, lon1], [lat2, lon2]
 export function getDistanceBetweenCoords(coord1, coord2) {
-    let radius = 6371 * 1000;
-    let lat1 = (coord1[0] * Math.PI)/180;
-    let lon1 = (coord1[1] * Math.PI)/180;
-    let lat2 = (coord2[0] * Math.PI)/180;
-    let lon2 = (coord2[1] * Math.PI)/180;
-    let term1 = Math.sin(coord2[1] - )
+    let radius = 6371 * 1000; // Earth's radius in meters
+    let lat1 = coord1[0] * Math.PI/180;
+    let lon1 = coord1[1] * Math.PI/180;
+    let lat2 = coord2[0] * Math.PI/180;
+    let lon2 = coord2[1] * Math.PI/180;
+    let sinLat = Math.pow(Math.sin((lat2 - lat1)/2), 2)
+    let sinLon = Math.pow(Math.sin((lon2 - lon1)/2), 2)
+    let cosScaling = Math.cos(lat1) * Math.cos(lat2);
+    let sqrtTerm = Math.sqrt(sinLat + cosScaling*sinLon);
+    return 2 * radius * Math.asin(sqrtTerm);
 }
