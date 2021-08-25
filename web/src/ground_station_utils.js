@@ -47,3 +47,12 @@ export function getUserLocation() {
         return null;
     }
 }
+
+export function getDistanceBetweenCoords(coord1, coord2) {
+    let radius = 6371 * 1000;
+    let lat1 = (coord1[0] * Math.PI)/180;
+    let lon1 = (coord1[1] * Math.PI)/180;
+    let lat2 = (coord2[0] * Math.PI)/180;
+    let lon2 = (coord2[1] * Math.PI)/180;
+    let term1 = Math.sin(coord2[1] - )
+}

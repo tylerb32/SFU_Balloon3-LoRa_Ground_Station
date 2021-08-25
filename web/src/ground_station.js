@@ -78,40 +78,44 @@ function parseData(packet) {
     if (isNaN(receivedChecksum)) {
         return PACKET_ERROR.INVALID_CHARACTERS;
     }
-    // Calculate checksum
-    let checksum = 0;
-    for (let i = 0; i < rawPacket.length; i++) {
-        checksum += rawPacket.charCodeAt(i);
-    }
-    console.log("Received: " + receivedChecksum + " | checksum: " + checksum);
-    if (receivedChecksum != checksum) {
-        return PACKET_ERROR.INVALID_CHECKSUM;
-    }
+    if (rawPacket != undefined) {
+        // Calculate checksum
+        let checksum = 0;
+        for (let i = 0; i < rawPacket.length; i++) {
+            checksum += rawPacket.charCodeAt(i);
+        }
 
-    let data = rawPacket.split(PACKET_DELIM_CHAR);
-    // Log/Error packet
-    if (data.length == 1) {
-        if (data[0] == NO_FIX_CHAR) {
-            return PACKET_ERROR.NO_FIX;
-        } else {
-            return PACKET_ERROR.INVALID_CHARACTERS;
+        if (receivedChecksum != checksum) {
+            return PACKET_ERROR.INVALID_CHECKSUM;
         }
-    // Data packet
-    } else if (data.length == 4) {
-        let coords = toDecimalDegrees([data[0], data[1]]);
-        if (coords != null) {
-            let dataDict = { 
-                latitude: coords[0],
-                longitude: coords[1],
-                altitude: data[2],
-                time: data[3]
-            };
-            return dataDict;
+
+        let data = rawPacket.split(PACKET_DELIM_CHAR);
+        // Log/Error packet
+        if (data.length == 1) {
+            if (data[0] == NO_FIX_CHAR) {
+                return PACKET_ERROR.NO_FIX;
+            } else {
+                return PACKET_ERROR.INVALID_CHARACTERS;
+            }
+        // Data packet
+        } else if (data.length == 4) {
+            let coords = toDecimalDegrees([data[0], data[1]]);
+            if (coords != null) {
+                let dataDict = { 
+                    latitude: coords[0],
+                    longitude: coords[1],
+                    altitude: data[2],
+                    time: data[3]
+                };
+                return dataDict;
+            } else {
+                return PACKET_ERROR.INVALID_CHARACTERS;
+            }
+            
+        // Faulty packet
         } else {
-            return PACKET_ERROR.INVALID_CHARACTERS;
+            return PACKET_ERROR.INVALID_FORMAT;
         }
-        
-    // Faulty packet
     } else {
         return PACKET_ERROR.INVALID_FORMAT;
     }
@@ -185,6 +189,7 @@ async function updateData() {
                 console.error("No GPS fix.");
             } else {
                 createLocMarker([packet.latitude, packet.longitude], packet.altitude, packet.time, "Received", utils.ICON_LOC_BLUE);
+                console.log("Received: [" + packet.latitude + ", " + packet.longitude + "], " + packet.altitude + "m, @ " + packet.time);
             }
         }
     }
