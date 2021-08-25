@@ -35,21 +35,6 @@ export const ICON_LOC_BLUE = L.icon({
     popupAnchor: [0, -36]
 });
 
-// May not need this
-export function getUserLocation() {
-    if (navigator.geolocation()) {
-        let latitude, longitude;
-        navigator.geolocation.getCurrentPosition((position) => {
-            latitude = position.coords.latitude;
-            longitude = position.coords.longitude;
-        });
-        return [latitude, longitude];
-
-    } else {
-        return null;
-    }
-}
-
 // Approximates the distance between 2 coordinates
 // Takes 2 coordinates in the following format [lat1, lon1], [lat2, lon2]
 export function getDistanceBetweenCoords(coord1, coord2) {

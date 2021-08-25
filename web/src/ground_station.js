@@ -16,6 +16,7 @@ let prevLoc = null; // Stores the last plotted marker as {latitude, longitude, a
 let prevPathLoc = null;
 let totalPacketCounter = 0;
 let goodPacketCounter = 0;
+let userMarker = null;
 
 // Leaflet Map Creation
 let map = L.map('map').setView([51.483667, -113.142667], 14); // Launch Site
@@ -75,6 +76,28 @@ function toDecimalDegrees(position) {
     let lonDD = -1 * (lonDeg + (lonMin / 60));
 
     return [latDD, lonDD];
+}
+
+// Attempts to get user location
+function getUserLocation() {
+    let retVal = null;
+    function success(position) {
+        retVal = { latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                altitude: position.coords.altitude };
+    }
+
+    function error() {
+        retVal = null;
+    }
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(success, error);
+
+    } else {
+        return retVal = null;
+    }
+    return retVal;
 }
 
 // Parses a packet and returns a dictionary defining the parsed values
@@ -192,6 +215,15 @@ plotProjectedPath();
 // Updates the data displayed on the map
 // Called by setInterval on a defined interval
 async function updateData() {
+    let userLoc = getUserLocation();
+    if (userLoc != null) {
+        if (userMarker != null) {
+            userMarker.remove();
+            userMarker = null;
+        }
+        userMarker = createLocMarker([userLoc.latitude, userLoc.longitude], userLoc.altitude, "?", "User Location", utils.ICON_HOUSE);
+    }
+
     // Request the data from the server
     let response = await fetch('/data/data.txt');
     let data = await response.text();
@@ -207,7 +239,7 @@ async function updateData() {
             if (packet == utils.PACKET_TYPE.INVALID_CHARACTERS) {
                 console.warn("Invalid character received.");
                 utils.logData("Invalid character received.", utils.PACKET_TYPE.INVALID_CHARACTERS);
-
+                
             // Catches any corrupt packets which failed the checksum test
             } else if (packet == utils.PACKET_TYPE.INVALID_CHECKSUM) {
                 console.warn("Invalid checksum received.");
