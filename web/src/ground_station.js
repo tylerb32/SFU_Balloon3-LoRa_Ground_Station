@@ -6,11 +6,14 @@ const CHECKSUM_SEP_CHAR = '~';
 const PACKET_DELIM_CHAR = ',';
 const NO_FIX_CHAR = '!';
 const PROJECTED_FLIGHT_FILE_PATH = '/data/flight_path.csv';
-const MIN_PLOT_DISTANCE = 0; // The minimum distance in meters required between points for them to be plotted - 0 => plot all points
-const MIN_PATH_DISTANCE = 5; // The minimum distance in meters required between points for a line to connect them - 0 => connect all points
+const MIN_PLOT_DISTANCE = 5; // The minimum distance in meters required between points for them to be plotted - 0 => plot all points
+const MAX_PLOT_DISTANCE = 500 * 1000;
+const MIN_PATH_DISTANCE = 20; // The minimum distance in meters required between points for a line to connect them - 0 => connect all points
+const MAX_PATH_DISTANCE = 500 * 1000;
 
 let dataPointer = 0; // Stores current line in data file
 let prevLoc = null; // Stores the last plotted marker as {latitude, longitude, altitude, time}
+let prevPathLoc = null;
 let totalPacketCounter = 0;
 let goodPacketCounter = 0;
 
@@ -74,6 +77,12 @@ function toDecimalDegrees(position) {
     return [latDD, lonDD];
 }
 
+// Parses a packet and returns a dictionary defining the parsed values
+// Inputs:
+// packet: A string of the format <checksum>~<latitude>,<longitude>,<altitude>,<time(HH:MM:SS)>
+// Output:
+// On a successful parse a dictionary of format { latitude, longitude, altitude, time } is returned
+// On an unsuccessful parse, a utils.PACKET_TYPE enum is returned describing the parse error
 function parseData(packet) {
     let splitPacket = packet.split(CHECKSUM_SEP_CHAR);
     let receivedChecksum = parseInt(splitPacket[0]);
@@ -125,13 +134,21 @@ function parseData(packet) {
     }
 }
 
+// Plots a path between 2 coordinates
+// Inputs:
+// coordsInit: [latitude, longitude]
+// colour: string defining path colour
+// smoothing: Double defining line weight
 function plotPath(coordsInit, coordsFin, colour, smoothing) {
-    L.polyline([coordsInit, coordsFin], {
-        color: colour,
-        smoothFactor: smoothing
-    }).addTo(map);
+    if (coordsInit != coordsFin) {
+        L.polyline([coordsInit, coordsFin], {
+            color: colour,
+            smoothFactor: smoothing
+        }).addTo(map);
+    }
 }
 
+// Parses a csv file genreated by HAB Predicter defined by a constant and plots the path described by it
 function plotProjectedPath() {
     // Request the file from the server
     fetch(PROJECTED_FLIGHT_FILE_PATH)
@@ -159,6 +176,7 @@ function plotProjectedPath() {
                     time: time
                 });
             }
+            // Plot markers and path
             for (let i = 0; i < path.length; i++) {
                 createLocMarker([path[i].latitude, path[i].longitude], path[i].altitude, path[i].time, "Predicted " + i, utils.ICON_CIRCLE_BLACK);
             }
@@ -171,7 +189,8 @@ function plotProjectedPath() {
 }
 plotProjectedPath();
 
-// Update the data displayed on the map
+// Updates the data displayed on the map
+// Called by setInterval on a defined interval
 async function updateData() {
     // Request the data from the server
     let response = await fetch('/data/data.txt');
@@ -184,29 +203,37 @@ async function updateData() {
         for (let i = 0; i < lineData.length - 1; i++) {
             totalPacketCounter++;
             let packet = parseData(lineData[i]);
+            // Catches any packets which had values which would not parse to integers
             if (packet == utils.PACKET_TYPE.INVALID_CHARACTERS) {
                 console.warn("Invalid character received.");
                 utils.logData("Invalid character received.", utils.PACKET_TYPE.INVALID_CHARACTERS);
 
+            // Catches any corrupt packets which failed the checksum test
             } else if (packet == utils.PACKET_TYPE.INVALID_CHECKSUM) {
                 console.warn("Invalid checksum received.");
                 utils.logData("Invalid checksum received.", utils.PACKET_TYPE.INVALID_CHECKSUM);
 
+            // Catches any packets which could not be resolved to the proper format (missing , separators)
             } else if (packet == utils.PACKET_TYPE.INVALID_FORMAT) {
                 console.warn("Invalid format received.");
                 utils.logData("Invalid format received.", utils.PACKET_TYPE.INVALID_FORMAT);
-
+            
+            // Catches the NO_FIX packet
             } else if (packet == utils.PACKET_TYPE.NO_FIX) {
                 console.error("No GPS fix.");
                 utils.logData("No GPS fix.", utils.PACKET_TYPE.NO_FIX);
 
+            // Packet integrity is considered good enough to plot
             } else {
                 goodPacketCounter++;
+                // Determine if packet should be plotted given min and max distance constants
                 if (prevLoc == null) {
                     prevLoc = packet;
                     createLocMarker([packet.latitude, packet.longitude], packet.altitude, packet.time, "Received #" + goodPacketCounter + "/" + totalPacketCounter, utils.ICON_LOC_BLUE);
 
-                } else if (utils.getDistanceBetweenCoords([prevLoc.latitude, prevLoc.longitude], [packet.latitude, packet.longitude]) >= MIN_PLOT_DISTANCE) {
+                } else if (utils.getDistanceBetweenCoords([prevLoc.latitude, prevLoc.longitude], [packet.latitude, packet.longitude]) >= MIN_PLOT_DISTANCE 
+                        && utils.getDistanceBetweenCoords([prevLoc.latitude, prevLoc.longitude], [packet.latitude, packet.longitude]) < MAX_PLOT_DISTANCE) {
+                    // Determine icon to plot based on altitude difference between previous packet
                     let icon = utils.ICON_LOC_BLUE;
                     if (packet.altitude > prevLoc.altitude) {
                         icon = utils.ICON_LOC_GREEN;
@@ -217,10 +244,14 @@ async function updateData() {
                     prevLoc = packet;
                     createLocMarker([packet.latitude, packet.longitude], packet.altitude, packet.time, "Received #" + goodPacketCounter + "/" + totalPackteCounter, icon);
                 }
-                if (prevLoc != null) {
-                    if (utils.getDistanceBetweenCoords([prevLoc.latitude, prevLoc.longitude], [packet.latitude, packet.longitude]) >= MIN_PATH_DISTANCE) {
-                        plotPath([prevLoc.latitude, prevLoc.longitude], [packet.latitude, packet.longitude], 'blue', 1.5);
-                    }
+
+                // Determine if a path should connect this point to the last stored path point given min and max path distance constants
+                if (prevPathLoc == null) {
+                    prevPathLoc = prevLoc;
+            
+                } else if (utils.getDistanceBetweenCoords([prevLoc.latitude, prevLoc.longitude], [packet.latitude, packet.longitude]) >= MIN_PATH_DISTANCE 
+                        && utils.getDistanceBetweenCoords([prevLoc.latitude, prevLoc.longitude], [packet.latitude, packet.longitude]) < MAX_PATH_DISTANCE) {
+                    plotPath([prevPathLoc.latitude, prevPathLoc.longitude], [packet.latitude, packet.longitude], 'blue', 1.5);
                 }
                 
                 console.log("Received: [" + packet.latitude + ", " + packet.longitude + "], " + packet.altitude + "m, @ " + packet.time);
