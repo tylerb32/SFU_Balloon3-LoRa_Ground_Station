@@ -1,0 +1,44 @@
+body {
+    margin: 0; padding: 0;
+}
+
+.log-container {
+    width: 25%;
+    height: 98vh;
+    float: left;
+    background-color: black;
+    color: white;
+    overflow-y: scroll;
+
+}
+.map-container {
+    width: 75%;
+    float: left
+
+}
+
+.log_msg {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 3px;
+    color: white;
+}
+
+.log_good {
+    background-color: green;
+}
+
+.log_invalid {
+    background-color: darkgoldenrod;
+}
+
+.log_error {
+    background-color: darkred;
+}
+
+#map {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+}

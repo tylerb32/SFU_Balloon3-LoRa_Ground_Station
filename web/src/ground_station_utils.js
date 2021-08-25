@@ -1,3 +1,5 @@
+export const PACKET_TYPE = { GOOD: 0, INVALID_CHECKSUM: 1, INVALID_CHARACTERS: 2, INVALID_FORMAT: 3, NO_FIX: 4 };
+
 export const ICON_CIRCLE_BLACK = L.icon({
     iconUrl: '/res/circle_black_marker.png',
     iconSize: [12, 12],
@@ -61,4 +63,33 @@ export function getDistanceBetweenCoords(coord1, coord2) {
     let cosScaling = Math.cos(lat1) * Math.cos(lat2);
     let sqrtTerm = Math.sqrt(sinLat + cosScaling*sinLon);
     return 2 * radius * Math.asin(sqrtTerm);
+}
+
+export function logData(data, type) {
+    let log = document.getElementById('log_list');
+    let node = document.createElement('li');
+    node.classList.add('log_msg');
+    switch (type) {
+        case PACKET_TYPE.GOOD:
+            node.classList.add('log_good');
+            break;
+
+        case PACKET_TYPE.INVALID_CHECKSUM:
+            node.classList.add('log_invalid');
+            break;
+        
+        case PACKET_TYPE.INVALID_CHARACTERS:
+            node.classList.add('log_invalid');
+            break;
+        
+        case PACKET_TYPE.INVALID_FORMAT:
+            node.classList.add('log_invalid');
+            break;
+
+        case PACKET_TYPE.NO_FIX:
+            node.classList.add('log_error');
+            break;
+    }
+    node.appendChild(document.createTextNode(data));
+    log.appendChild(node);
 }

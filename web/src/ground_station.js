@@ -6,8 +6,7 @@ const CHECKSUM_SEP_CHAR = '~';
 const PACKET_DELIM_CHAR = ',';
 const NO_FIX_CHAR = '!';
 const PROJECTED_FLIGHT_FILE_PATH = '/data/flight_path.csv';
-const PACKET_ERROR = { INVALID_CHECKSUM: 1, INVALID_CHARACTERS: 2, INVALID_FORMAT: 3, NO_FIX: 4 };
-const MIN_PLOT_DISTANCE = 5; // The minimum distance in meters required between points for them to be plotted - 0 => plot all points
+const MIN_PLOT_DISTANCE = 0; // The minimum distance in meters required between points for them to be plotted - 0 => plot all points
 
 let dataPointer = 0; // Stores current line in data file
 let prevLoc = null; // Stores the last plotted marker as {latitude, longitude, altitude, time}
@@ -80,7 +79,7 @@ function parseData(packet) {
     let rawPacket = splitPacket[1];
     // If the checksum can't be parsed to an int, the packet is considered corrupted
     if (isNaN(receivedChecksum)) {
-        return PACKET_ERROR.INVALID_CHARACTERS;
+        return utils.PACKET_TYPE.INVALID_CHARACTERS;
     }
     if (rawPacket != undefined) {
         // Calculate checksum
@@ -90,16 +89,16 @@ function parseData(packet) {
         }
 
         if (receivedChecksum != checksum) {
-            return PACKET_ERROR.INVALID_CHECKSUM;
+            return utils.PACKET_TYPE.INVALID_CHECKSUM;
         }
 
         let data = rawPacket.split(PACKET_DELIM_CHAR);
         // Log/Error packet
         if (data.length == 1) {
             if (data[0] == NO_FIX_CHAR) {
-                return PACKET_ERROR.NO_FIX;
+                return utils.PACKET_TYPE.NO_FIX;
             } else {
-                return PACKET_ERROR.INVALID_CHARACTERS;
+                return utils.PACKET_TYPE.INVALID_CHARACTERS;
             }
         // Data packet
         } else if (data.length == 4) {
@@ -113,15 +112,15 @@ function parseData(packet) {
                 };
                 return dataDict;
             } else {
-                return PACKET_ERROR.INVALID_CHARACTERS;
+                return utils.PACKET_TYPE.INVALID_CHARACTERS;
             }
             
         // Faulty packet
         } else {
-            return PACKET_ERROR.INVALID_FORMAT;
+            return utils.PACKET_TYPE.INVALID_FORMAT;
         }
     } else {
-        return PACKET_ERROR.INVALID_FORMAT;
+        return utils.PACKET_TYPE.INVALID_FORMAT;
     }
 }
 
@@ -180,17 +179,21 @@ async function updateData() {
         for (let i = 0; i < lineData.length - 1; i++) {
             totalPacketCounter++;
             let packet = parseData(lineData[i]);
-            if (packet == PACKET_ERROR.INVALID_CHARACTERS) {
+            if (packet == utils.PACKET_TYPE.INVALID_CHARACTERS) {
                 console.warn("Invalid character received.");
+                utils.logData("Invalid character received.", utils.PACKET_TYPE.INVALID_CHARACTERS);
 
-            } else if (packet == PACKET_ERROR.INVALID_CHECKSUM) {
+            } else if (packet == utils.PACKET_TYPE.INVALID_CHECKSUM) {
                 console.warn("Invalid checksum received.");
+                utils.logData("Invalid checksum received.", utils.PACKET_TYPE.INVALID_CHECKSUM);
 
-            } else if (packet == PACKET_ERROR.INVALID_FORMAT) {
+            } else if (packet == utils.PACKET_TYPE.INVALID_FORMAT) {
                 console.warn("Invalid format received.");
+                utils.logData("Invalid format received.", utils.PACKET_TYPE.INVALID_FORMAT);
 
-            } else if (packet == PACKET_ERROR.NO_FIX) {
+            } else if (packet == utils.PACKET_TYPE.NO_FIX) {
                 console.error("No GPS fix.");
+                utils.logData("No GPS fix.", utils.PACKET_TYPE.NO_FIX);
 
             } else {
                 goodPacketCounter++;
@@ -206,11 +209,12 @@ async function updateData() {
                     } else if (packet.altitude < prevLoc.altitude) {
                         icon = utils.ICON_LOC_RED;
                     }
-                    prevLoc = [packet.latitude, packet.longitude, packet.altitude];
+                    prevLoc = packet;
                     createLocMarker([packet.latitude, packet.longitude], packet.altitude, packet.time, "Received #" + goodPacketCounter + "/" + totalPackteCounter, icon);
                 }
                 
                 console.log("Received: [" + packet.latitude + ", " + packet.longitude + "], " + packet.altitude + "m, @ " + packet.time);
+                utils.logData("Received: [" + packet.latitude + ", " + packet.longitude + "], " + packet.altitude + "m, @ " + packet.time);
             }
         }
     }
