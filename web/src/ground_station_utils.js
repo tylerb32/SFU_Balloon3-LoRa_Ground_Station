@@ -1,3 +1,4 @@
+// Defining constants
 export const PACKET_TYPE = { GOOD: 0, INVALID_CHECKSUM: 1, INVALID_CHARACTERS: 2, INVALID_FORMAT: 3, NO_FIX: 4 };
 
 export const ICON_CIRCLE_BLACK = L.icon({
@@ -35,6 +36,13 @@ export const ICON_LOC_BLUE = L.icon({
     popupAnchor: [0, -36]
 });
 
+export const ICON_LAPTOP = L.icon({
+    iconUrl: '/res/laptop_marker.png',
+    iconSize: [30, 30],
+    iconAnchor: [15, 30],
+    popupAnchor: [0, -30]
+});
+
 // Approximates the distance between 2 coordinates
 // Takes 2 coordinates in the following format [lat1, lon1], [lat2, lon2]
 export function getDistanceBetweenCoords(coord1, coord2) {
@@ -50,6 +58,10 @@ export function getDistanceBetweenCoords(coord1, coord2) {
     return 2 * radius * Math.asin(sqrtTerm);
 }
 
+// Writes data to the sidebar log
+// Inputs:
+// data: A string message to be logged
+// type: A PACKET_TYPE which describes the message type
 export function logData(data, type) {
     let log = document.getElementById('log_list');
     let node = document.createElement('li');

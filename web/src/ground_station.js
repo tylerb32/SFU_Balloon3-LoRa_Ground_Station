@@ -1,6 +1,6 @@
 import * as utils from './ground_station_utils.js'
 
-// Declaring constants
+// Defining constants
 const DATA_UPDATE_INTERVAL = 5 * 1000; // Update data every 5 seconds
 const CHECKSUM_SEP_CHAR = '~';
 const PACKET_DELIM_CHAR = ',';
@@ -11,6 +11,7 @@ const MAX_PLOT_DISTANCE = 500 * 1000;
 const MIN_PATH_DISTANCE = 20; // The minimum distance in meters required between points for a line to connect them - 0 => connect all points
 const MAX_PATH_DISTANCE = 500 * 1000;
 
+// Defining globals
 let dataPointer = 0; // Stores current line in data file
 let prevLoc = null; // Stores the last plotted marker as {latitude, longitude, altitude, time}
 let prevPathLoc = null;
@@ -79,25 +80,33 @@ function toDecimalDegrees(position) {
 }
 
 // Attempts to get user location
-function getUserLocation() {
-    let retVal = null;
-    function success(position) {
-        retVal = { latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-                altitude: position.coords.altitude };
+function updateUserLocation() {
+    function error() {
+        console.log("Error getting coordinates!");
     }
 
-    function error() {
-        retVal = null;
+    function success(position) {
+        let prevLoc = null;
+        let newLoc = [position.coords.latitude, position.coords.longitude];
+        if (userMarker != null) {
+            prevLoc = [userMarker.getLatLng().lat, userMarker.getLatLng().lng];
+            if (newLoc != prevLoc) {
+                userMarker.remove();
+                userMarker = null;
+            }
+        }
+        
+        if (newLoc != prevLoc) {
+            userMarker = createLocMarker(newLoc, position.coords.altitude, "?", "User Location", utils.ICON_LAPTOP);
+        }
     }
 
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(success, error);
+        navigator.geolocation.getCurrentPosition(success, error, utils.geoOptions);
 
     } else {
-        return retVal = null;
+        console.log("Geolocation not available!");
     }
-    return retVal;
 }
 
 // Parses a packet and returns a dictionary defining the parsed values
@@ -215,14 +224,7 @@ plotProjectedPath();
 // Updates the data displayed on the map
 // Called by setInterval on a defined interval
 async function updateData() {
-    let userLoc = getUserLocation();
-    if (userLoc != null) {
-        if (userMarker != null) {
-            userMarker.remove();
-            userMarker = null;
-        }
-        userMarker = createLocMarker([userLoc.latitude, userLoc.longitude], userLoc.altitude, "?", "User Location", utils.ICON_HOUSE);
-    }
+    updateUserLocation();
 
     // Request the data from the server
     let response = await fetch('/data/data.txt');
@@ -274,16 +276,17 @@ async function updateData() {
                         icon = utils.ICON_LOC_RED;
                     }
                     prevLoc = packet;
-                    createLocMarker([packet.latitude, packet.longitude], packet.altitude, packet.time, "Received #" + goodPacketCounter + "/" + totalPackteCounter, icon);
+                    createLocMarker([packet.latitude, packet.longitude], packet.altitude, packet.time, "Received #" + goodPacketCounter + "/" + totalPacketCounter, icon);
                 }
 
                 // Determine if a path should connect this point to the last stored path point given min and max path distance constants
                 if (prevPathLoc == null) {
                     prevPathLoc = prevLoc;
             
-                } else if (utils.getDistanceBetweenCoords([prevLoc.latitude, prevLoc.longitude], [packet.latitude, packet.longitude]) >= MIN_PATH_DISTANCE 
-                        && utils.getDistanceBetweenCoords([prevLoc.latitude, prevLoc.longitude], [packet.latitude, packet.longitude]) < MAX_PATH_DISTANCE) {
+                } else if (utils.getDistanceBetweenCoords([prevPathLoc.latitude, prevPathLoc.longitude], [packet.latitude, packet.longitude]) >= MIN_PATH_DISTANCE 
+                        && utils.getDistanceBetweenCoords([prevPathLoc.latitude, prevPathLoc.longitude], [packet.latitude, packet.longitude]) < MAX_PATH_DISTANCE) {
                     plotPath([prevPathLoc.latitude, prevPathLoc.longitude], [packet.latitude, packet.longitude], 'blue', 1.5);
+                    prevPathLoc = packet;
                 }
                 
                 console.log("Received: [" + packet.latitude + ", " + packet.longitude + "], " + packet.altitude + "m, @ " + packet.time);
