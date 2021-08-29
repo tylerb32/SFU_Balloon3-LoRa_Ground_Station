@@ -6,7 +6,7 @@ const CHECKSUM_SEP_CHAR = '~';
 const PACKET_DELIM_CHAR = ',';
 const NO_FIX_CHAR = '!';
 const PROJECTED_FLIGHT_FILE_PATH = '/data/flight_path.csv';
-const MIN_PLOT_DISTANCE = 5; // The minimum distance in meters required between points for them to be plotted - 0 => plot all points
+const MIN_PLOT_DISTANCE = 30; // The minimum distance in meters required between points for them to be plotted - 0 => plot all points
 const MAX_PLOT_DISTANCE = 500 * 1000;
 const MIN_PATH_DISTANCE = 20; // The minimum distance in meters required between points for a line to connect them - 0 => connect all points
 const MAX_PATH_DISTANCE = 500 * 1000;
@@ -209,7 +209,7 @@ function plotProjectedPath() {
                 });
             }
             // Plot markers and path
-            for (let i = 0; i < path.length; i++) {
+            for (let i = 0; i < path.length - 1; i++) {
                 createLocMarker([path[i].latitude, path[i].longitude], path[i].altitude, path[i].time, "Predicted " + i, utils.ICON_CIRCLE_BLACK);
             }
             for (let i = 1; i < path.length; i++) {
