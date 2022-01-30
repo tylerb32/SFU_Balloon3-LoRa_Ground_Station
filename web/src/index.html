@@ -4,15 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="stylesheet" href="lib/leaflet/dist/leaflet.css">
+    <link rel="stylesheet" href="style.css">
     <script src="lib/leaflet/dist/leaflet.js"></script>
     <script src="lib/sql/sql.js"></script>
-    <style>
-        body { margin: 0; padding: 0; }
-        .log-container { width: 25%; height: 98vh; float: left; background-color: black; color: white }
-        .map-container { width: 75%; float: left }
-        .log { margin: 0; width: 100%; }
-	    #map { position: absolute; top: 0; bottom: 0; width: 100%; }
-    </style>
     <title>Ground Station</title>
 </head>
 <body>
@@ -21,7 +15,10 @@
             <div class="header">
                 <h1>LoRa Ground Station</h1>
             </div>
-            <div class="log"></div>
+            <div id="log">
+                <ul id="log_list" class=log_list>
+                </ul>
+            </div>
         </div>
         <!-- Declare map for leaflet -->
         <div class="map-container">
