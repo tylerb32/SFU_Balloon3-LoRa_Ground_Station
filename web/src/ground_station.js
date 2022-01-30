@@ -121,19 +121,7 @@ function parseData(packet) {
     let rawPacket = splitPacket[1];
     // If the checksum can't be parsed to an int, the packet is considered corrupted
     if (isNaN(receivedChecksum)) {
-<<<<<<< HEAD
-        return PACKET_ERROR.INVALID_CHARACTERS;
-    }
-    if (rawPacket == undefined) {
-        return PACKET_ERROR.INVALID_FORMAT;
-    }
-    // Calculate checksum
-    let checksum = 0;
-    for (let i = 0; i < rawPacket.length; i++) {
-        checksum += rawPacket[i];
-=======
         return utils.PACKET_TYPE.INVALID_CHARACTERS;
->>>>>>> ca0acf92c5b6f23b6bda9c6bb942196b7a2ab9df
     }
     if (rawPacket != undefined) {
         // Calculate checksum
