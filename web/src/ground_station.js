@@ -77,6 +77,9 @@ function parseData(packet) {
     if (isNaN(receivedChecksum)) {
         return PACKET_ERROR.INVALID_CHARACTERS;
     }
+    if (rawPacket == undefined) {
+        return PACKET_ERROR.INVALID_FORMAT;
+    }
     // Calculate checksum
     let checksum = 0;
     for (let i = 0; i < rawPacket.length; i++) {
