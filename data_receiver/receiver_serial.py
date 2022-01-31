@@ -5,7 +5,7 @@ from shutil import SameFileError, copyfile
 from datetime import datetime
 import time
 
-# SERIAL_PORT = "COM3"
+# SERIAL_PORT = "COM3" # Windows testing
 SERIAL_PORT = "/dev/ttyACM0"
 SERIAL_BAUD_RATE = 9600
 SERIAL_TIMEOUT = 10

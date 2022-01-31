@@ -1,8 +1,4 @@
 #! /bin/sh
-#cd ../data_receiver
-#python3 receiver.py &
-#cd ../web
-#http-server
 
 # Set start time
 time_start=$(date -u +"%s")
@@ -26,7 +22,7 @@ while [ true ]; do
         "stop")
             echo "Closing processes..."
             kill $server_pid
-            kill $receiver_pid # TODO: may need to close this safely to avoid data loss
+            kill $receiver_pid
             # Break out of infinite while loop
             break
             ;;

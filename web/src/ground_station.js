@@ -6,7 +6,7 @@ const CHECKSUM_SEP_CHAR = '~';
 const PACKET_DELIM_CHAR = ',';
 const NO_FIX_CHAR = '!';
 const PROJECTED_FLIGHT_FILE_PATH = '/data/flight_path.csv';
-const MIN_PLOT_DISTANCE = 100; // The minimum distance in meters required between points for them to be plotted - 0 => plot all points
+const MIN_PLOT_DISTANCE = 2500; // The minimum distance in meters required between points for them to be plotted - 0 => plot all points
 const MAX_PLOT_DISTANCE = 500 * 1000;
 const MIN_PATH_DISTANCE = 20; // The minimum distance in meters required between points for a line to connect them - 0 => connect all points
 const MAX_PATH_DISTANCE = 500 * 1000;
