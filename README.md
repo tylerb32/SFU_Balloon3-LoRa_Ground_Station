@@ -31,4 +31,4 @@ Note: The project was intended for Linux use only but with small tweaks to the s
 Although the recovery of the balloon was successful and the ground station did it's job, some shortcomings were evident while tracking the balloon.
 - Knowing the balloon's velocity and falling speed would be nice as it helps with chasing the balloon and predicting the balloon's landing location if the GPS signal is lost while falling. This feature was protoyped but was ultimately scrapped due to time constraints surrounding validation.
 - Displaying the user's location would be beneficial for tracking the balloon without the need for an external map. This would require either an internet connection (for an approximate location) or a web-server allowing mobile devices to view the ground station.
-- Scaling related to how many plot point are displayed would be nice to have, although a luxury.
+- Scaling related to how many plot points are displayed would be nice to have, although a luxury.
