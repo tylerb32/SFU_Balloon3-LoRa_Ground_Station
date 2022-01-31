@@ -1,4 +1,4 @@
-# SFU Aerospace Balloon 3 - Raspi Ground Station V1
+# SFU Aerospace Balloon 3 - LoRa Ground Station
 Balloon 3 is SFU Aerospace's 3rd iteration of the high-altitude balloon project which is intended to further students understanding of the engineering process while preparing them for contributing to future design teams such as rocketry, astrorobotics, and satellites. This is my implementation of our ground station which integrated with an Arduino board containing the 915MHz LoRa radio module over serial to store, parse, backup, and display the received data.
 
 ## Project Links
